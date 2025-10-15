@@ -1,13 +1,23 @@
 [project]
-name = "stacklend"
+name = "hayyprotocol"
 description = ""
 authors = []
 telemetry = true
 cache_dir = "./.cache"
 
-[contracts.collateral-v2]
-path = "contracts/collateral-v1.clar"
-clarity_version = 2
+[contracts.mock-sbtc-v1]
+path = "contracts/mock-sbtc-v1.clar"
+clarity_version = 3
+epoch = "3.0"
+
+[contracts.mock-oracle-v1]
+path = "contracts/mock-oracle-v1.clar"
+clarity_version = 3
+epoch = "3.0"
+
+[contracts.money-market-core]
+path = "contracts/money-market-core.clar"
+clarity_version = 3
 epoch = "3.0"
 
 [repl.analysis]

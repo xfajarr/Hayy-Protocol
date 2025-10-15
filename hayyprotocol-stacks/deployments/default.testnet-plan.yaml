@@ -9,10 +9,24 @@ plan:
     - id: 0
       transactions:
         - contract-publish:
-            contract-name: collateral-v2
-            expected-sender: ST1WVZNYKMK1MS2V2B728ZWJ2C76TAN49C6HSY7JF
-            cost: 50500
-            path: contracts/collateral-v1.clar
+            contract-name: mock-oracle-v1
+            expected-sender: ST27SK3XEXY9QW51FJHKBR3QEHR5RFDBH3C16RTW0
+            cost: 10520
+            path: "contracts\\mock-oracle-v1.clar"
             anchor-block-only: true
-            clarity-version: 2
+            clarity-version: 3
+        - contract-publish:
+            contract-name: mock-sbtc-v1
+            expected-sender: ST27SK3XEXY9QW51FJHKBR3QEHR5RFDBH3C16RTW0
+            cost: 25790
+            path: "contracts\\mock-sbtc-v1.clar"
+            anchor-block-only: true
+            clarity-version: 3
+        - contract-publish:
+            contract-name: money-market-core
+            expected-sender: ST27SK3XEXY9QW51FJHKBR3QEHR5RFDBH3C16RTW0
+            cost: 178460
+            path: "contracts\\money-market-core.clar"
+            anchor-block-only: true
+            clarity-version: 3
       epoch: "3.0"
