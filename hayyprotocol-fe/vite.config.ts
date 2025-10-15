@@ -18,12 +18,22 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    // Suppress Lit dev mode warning
+    'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
+  },
   optimizeDeps: {
     include: [
       '@stacks/connect',
       '@stacks/transactions',
       '@stacks/network'
     ],
+    exclude: ['lit'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      }
+    },
     force: true
   },
   build: {

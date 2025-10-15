@@ -18,7 +18,7 @@ export const Header = () => {
             <Layers className="size-5" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xl">StackLend</span>
+            <span className="font-bold text-xl">Hayy Protocol</span>
             <span className="text-xs text-muted-foreground">Lend & Borrow on Stacks</span>
           </div>
         </div>

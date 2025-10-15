@@ -1,26 +1,17 @@
-import { 
-  openContractCall,
-  FinishedTxData,
-  UserSession
-} from '@stacks/connect';
-import { 
-  stringUtf8CV, 
+import { openContractCall, FinishedTxData, UserSession } from "@stacks/connect";
+import {
+  stringUtf8CV,
   uintCV,
-  ClarityValue, 
-  standardPrincipalCV,
-  principalCV,
+  ClarityValue,
   bufferCV,
-  someCV,
-  noneCV,
-  stringAsciiCV
-} from '@stacks/transactions';
-import { STACKS_TESTNET, STACKS_MAINNET } from '@stacks/network';
-import { getCurrentNetworkConfig, NETWORK_CONFIG } from './config';
+  stringAsciiCV,
+} from "@stacks/transactions";
+import { STACKS_TESTNET, STACKS_MAINNET } from "@stacks/network";
+import { STACKS_CONFIG, STACKS_FUNCTIONS } from "@/constants/contract/stacks";
 
 // Select network based on configuration
-const NETWORK = NETWORK_CONFIG.NETWORK === 'mainnet' 
-  ? STACKS_MAINNET
-  : STACKS_TESTNET;
+const NETWORK =
+  STACKS_CONFIG.network === "mainnet" ? STACKS_MAINNET : STACKS_TESTNET;
 
 export interface TransactionResult {
   txid: string;
@@ -36,8 +27,13 @@ export interface ContractCallOptions {
   onCancel?: () => void;
 }
 
-// StackLend Protocol Contract Addresses - uses config.ts for addresses
-export const STACKLEND_CONTRACTS = getCurrentNetworkConfig();
+// StackLend Protocol Contract Addresses
+export const STACKLEND_CONTRACTS = {
+  COLLATERAL: {
+    address: STACKS_CONFIG.contractAddress,
+    name: STACKS_CONFIG.collateralContractName,
+  },
+};
 
 const callContract = async (options: ContractCallOptions): Promise<void> => {
   const {
@@ -47,19 +43,19 @@ const callContract = async (options: ContractCallOptions): Promise<void> => {
     functionArgs,
     userSession,
     onFinish,
-    onCancel
+    onCancel,
   } = options;
 
   try {
-    console.log('Calling contract function:', {
+    console.log("Calling contract function:", {
       contractAddress,
       contractName,
       functionName,
-      functionArgs: functionArgs.map(arg => arg.toString())
+      functionArgs: functionArgs.map((arg) => arg.toString()),
     });
 
-    console.log('Network being used:', NETWORK_CONFIG.NETWORK);
-    console.log('UserSession provided:', !!userSession);
+    console.log("Network being used:", STACKS_CONFIG.network);
+    console.log("UserSession provided:", !!userSession);
 
     const callOptions = {
       network: NETWORK,
@@ -68,26 +64,30 @@ const callContract = async (options: ContractCallOptions): Promise<void> => {
       functionName,
       functionArgs,
       appDetails: {
-        name: 'StackLend',
-        icon: window.location.origin + '/favicon.ico',
+        name: "StackLend",
+        icon: window.location.origin + "/favicon.ico",
       },
       // Provide userSession when available to ensure proper wallet routing
       ...(userSession ? { userSession } : {}),
-      onFinish: onFinish || ((data) => {
-        console.log('Transaction completed:', data);
-      }),
-      onCancel: onCancel || (() => {
-        console.log('Transaction cancelled by user');
-      }),
+      onFinish:
+        onFinish ||
+        ((data) => {
+          console.log("Transaction completed:", data);
+        }),
+      onCancel:
+        onCancel ||
+        (() => {
+          console.log("Transaction cancelled by user");
+        }),
     };
 
-    console.log('Call options:', callOptions);
+    console.log("Call options:", callOptions);
 
     const result = await openContractCall(callOptions);
 
-    console.log('openContractCall result:', result);
+    console.log("openContractCall result:", result);
   } catch (error) {
-    console.error('Contract call failed:', error);
+    console.error("Contract call failed:", error);
     if (onCancel) {
       onCancel();
     }
@@ -97,99 +97,101 @@ const callContract = async (options: ContractCallOptions): Promise<void> => {
 
 // Collateral Management Functions
 export const depositCollateral = async (
-  amount: string, 
+  amount: string,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
     contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
-    functionName: 'deposit-collateral',
+    functionName: "deposit-collateral",
     functionArgs: [
-      uintCV(amount) // amount in microSTX
+      uintCV(amount), // amount in microSTX
     ],
     onFinish,
-    onCancel
+    onCancel,
   });
 };
 
-export const withdrawCollateral = async (
-  amount: string, 
+export const requestWithdraw = async (
+  amount: string,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
     contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
-    functionName: 'withdraw-collateral',
+    functionName: STACKS_FUNCTIONS.REQUEST_WITHDRAW,
     functionArgs: [uintCV(amount)],
     onFinish,
-    onCancel
+    onCancel,
   });
 };
 
 // Lending Functions
 export const lendAsset = async (
   tokenId: string,
-  amount: string, 
+  amount: string,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.LENDING.address,
     contractName: STACKLEND_CONTRACTS.LENDING.name,
-    functionName: 'lend',
+    functionName: "lend",
     functionArgs: [
       stringAsciiCV(tokenId), // Token identifier (e.g., "USDC", "USDT", "WBTC")
-      uintCV(amount) // Amount to lend
+      uintCV(amount), // Amount to lend
     ],
     onFinish,
-    onCancel: onCancel || (() => {
-      console.log('Lending cancelled');
-    })
+    onCancel:
+      onCancel ||
+      (() => {
+        console.log("Lending cancelled");
+      }),
   });
 };
 
 // Cross-Chain Operations
 export const borrowCrossChain = async (
-  tokenSymbol: string, 
-  amount: string, 
+  tokenSymbol: string,
+  amount: string,
   evmRecipient: string,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
     contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
-    functionName: 'borrow-cross-chain',
+    functionName: "borrow-cross-chain",
     functionArgs: [
       stringAsciiCV(tokenSymbol),
       uintCV(amount),
-      stringUtf8CV(evmRecipient)
+      stringUtf8CV(evmRecipient),
     ],
     onFinish,
-    onCancel
+    onCancel,
   });
 };
 
 export const signalRepayment = async (
-  tokenSymbol: string, 
-  amount: string, 
+  tokenSymbol: string,
+  amount: string,
   evmTxHash: string,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
     contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
-    functionName: 'signal-repayment',
+    functionName: "signal-repayment",
     functionArgs: [
       stringAsciiCV(tokenSymbol),
       uintCV(amount),
-      bufferCV(Buffer.from(evmTxHash.replace('0x', ''), 'hex'))
+      bufferCV(Buffer.from(evmTxHash.replace("0x", ""), "hex")),
     ],
     onFinish,
-    onCancel
+    onCancel,
   });
 };
 
@@ -197,16 +199,16 @@ export const signalRepayment = async (
 export const initAdmin = async (
   userSession?: UserSession,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
     contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
-    functionName: 'init-admin',
+    functionName: "init-admin",
     functionArgs: [],
     userSession,
     onFinish,
-    onCancel
+    onCancel,
   });
 };
 
@@ -218,22 +220,22 @@ export const addToken = async (
   status: number,
   userSession?: UserSession,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
     contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
-    functionName: 'add-token',
+    functionName: "add-token",
     functionArgs: [
       stringAsciiCV(tokenId),
       uintCV(chain),
       uintCV(apyBps),
       uintCV(liquidity),
-      uintCV(status)
+      uintCV(status),
     ],
     userSession,
     onFinish,
-    onCancel
+    onCancel,
   });
 };
 
@@ -241,38 +243,42 @@ export const addToken = async (
 export const depositLending = async (
   amount: string,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.LENDING.address,
     contractName: STACKLEND_CONTRACTS.LENDING.name,
-    functionName: 'deposit-lend-collateral',
+    functionName: "deposit-lend-collateral",
     functionArgs: [
-      uintCV(amount) // Amount to lend
+      uintCV(amount), // Amount to lend
     ],
     onFinish,
-    onCancel: onCancel || (() => {
-      console.log('Lending deposit cancelled');
-    })
+    onCancel:
+      onCancel ||
+      (() => {
+        console.log("Lending deposit cancelled");
+      }),
   });
 };
 
 export const withdrawLending = async (
   amount: string,
   onFinish?: (data: FinishedTxData) => void,
-  onCancel?: () => void
+  onCancel?: () => void,
 ): Promise<void> => {
   return callContract({
     contractAddress: STACKLEND_CONTRACTS.LENDING.address,
     contractName: STACKLEND_CONTRACTS.LENDING.name,
-    functionName: 'withdraw-lend-collateral',
+    functionName: "withdraw-lend-collateral",
     functionArgs: [
-      uintCV(amount) // Amount to withdraw
+      uintCV(amount), // Amount to withdraw
     ],
     onFinish,
-    onCancel: onCancel || (() => {
-      console.log('Lending withdrawal cancelled');
-    })
+    onCancel:
+      onCancel ||
+      (() => {
+        console.log("Lending withdrawal cancelled");
+      }),
   });
 };
 

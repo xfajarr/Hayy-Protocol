@@ -14,10 +14,7 @@ import { useStacks } from "@/hooks/use-stacks";
 import { useStacksContractData } from "@/hooks/use-stacks-data";
 import {
   depositCollateral,
-  withdrawCollateral,
-  borrowCrossChain,
-  signalRepayment,
-  depositLending,
+  requestWithdraw,
   STACKLEND_CONTRACTS,
 } from "@/lib/stacks-transactions";
 import { toast } from "@/hooks/use-toast";
@@ -32,29 +29,14 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
 
   const [collateralAmount, setCollateralAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [borrowAmount, setBorrowAmount] = useState("");
-  const [repayAmount, setRepayAmount] = useState("");
-  const [lendAmount, setLendAmount] = useState("");
-  const [borrowToken, setBorrowToken] = useState<"USDC" | "USDT" | "WBTC">(
-    "USDC",
-  );
-  const [repayToken, setRepayToken] = useState<"USDC" | "USDT" | "WBTC">(
-    "USDC",
-  );
   const [isDepositing, setIsDepositing] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
-  const [isBorrowing, setIsBorrowing] = useState(false);
-  const [isRepaying, setIsRepaying] = useState(false);
-  const [isLending, setIsLending] = useState(false);
 
   // Clear amounts when disconnected
   useEffect(() => {
     if (!isConnected) {
       setCollateralAmount("");
       setWithdrawAmount("");
-      setBorrowAmount("");
-      setRepayAmount("");
-      setLendAmount("");
     }
   }, [isConnected]);
 
@@ -155,12 +137,12 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         parseFloat(withdrawAmount) * 1_000_000,
       ).toString();
 
-      await withdrawCollateral(
+      await requestWithdraw(
         microSTX,
         (data) => {
           toast({
-            title: "Collateral Withdrawn Successfully!",
-            description: `${withdrawAmount} STX withdrawn. Transaction: ${data.txId}`,
+            title: "Withdrawal Request Submitted!",
+            description: `Request for ${withdrawAmount} STX submitted. Relayer will process after Sui verification. Transaction: ${data.txId}`,
             duration: 10000,
           });
           setWithdrawAmount("");
@@ -168,7 +150,7 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
         () => {
           toast({
             title: "Transaction Cancelled",
-            description: "Withdrawal was cancelled by user",
+            description: "Withdrawal request was cancelled by user",
             variant: "default",
           });
         },
@@ -481,11 +463,14 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
           </div>
         </div>
 
-        {/* Withdraw Collateral */}
+        {/* Request Withdrawal */}
         <div className="space-y-3">
           <Label htmlFor="withdraw" className="text-sm font-medium">
-            Withdraw STX Collateral
+            Request STX Withdrawal
           </Label>
+          <p className="text-xs text-gray-500">
+            Withdrawal will be processed by relayer after Sui debt verification
+          </p>
           <div className="space-y-2">
             <Input
               id="withdraw"
@@ -504,56 +489,10 @@ export const StacksLending: React.FC<StacksLendingProps> = ({ className }) => {
               {isWithdrawing ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Withdrawing...
+                  Requesting...
                 </>
               ) : (
-                "Withdraw Collateral"
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Cross-Chain Borrowing */}
-        <div className="border-t pt-4 space-y-3">
-          <Label className="text-sm font-medium flex items-center gap-2">
-            <ArrowRightLeft className="h-4 w-4" />
-            Cross-Chain Borrow
-          </Label>
-          <div className="space-y-3">
-            <Select
-              value={borrowToken}
-              onValueChange={(value: "USDC" | "USDT" | "WBTC") =>
-                setBorrowToken(value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select token to borrow" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USDC">USDC (6 decimals)</SelectItem>
-                <SelectItem value="USDT">USDT (6 decimals)</SelectItem>
-                <SelectItem value="WBTC">WBTC (8 decimals)</SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              type="number"
-              placeholder={`Enter ${borrowToken} amount (e.g., 100)`}
-              value={borrowAmount}
-              onChange={(e) => setBorrowAmount(e.target.value)}
-              disabled={isBorrowing}
-            />
-            <Button
-              onClick={handleCrossChainBorrow}
-              className="w-full"
-              disabled={isBorrowing}
-            >
-              {isBorrowing ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                `Borrow ${borrowToken}`
+                "Request Withdrawal"
               )}
             </Button>
           </div>

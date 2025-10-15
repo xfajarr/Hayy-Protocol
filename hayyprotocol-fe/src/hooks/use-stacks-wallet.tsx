@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-  showConnect, 
-  AppConfig, 
-  UserSession, 
+import {
+  AppConfig,
+  UserSession,
   FinishedTxData,
-  openContractCall 
+  openContractCall
 } from '@stacks/connect';
+import { authenticate } from '@stacks/connect';
 
 interface StacksWalletState {
   address?: string;
@@ -56,20 +56,24 @@ export const useStacksWallet = () => {
 
   const connectWallet = useCallback(async () => {
     try {
-      showConnect({
+      await authenticate({
         appDetails: {
           name: 'StackLend',
           icon: window.location.origin + '/favicon.ico',
         },
         redirectTo: '/',
-        onFinish: () => {
+        onFinish: (payload) => {
+          console.log('Wallet connected successfully', payload);
           // Connection status will be updated by the useEffect above
-          console.log('Wallet connected successfully');
+        },
+        onCancel: () => {
+          console.log('Connection cancelled by user');
         },
         userSession,
       });
     } catch (error) {
       console.error('Connection failed:', error);
+      throw error;
     }
   }, [userSession]);
 

@@ -24,6 +24,7 @@ import { useUsdcBalance } from "@/features/common/hooks/useUsdcBalance";
 import { useSbtcBalance } from "@/features/common/hooks/useSbtcBalance";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Coins, TrendingUp, Info, AlertTriangle, Shield, DollarSign, ArrowUpDown } from "lucide-react";
+import { StacksLending } from "@/components/lend/StacksLending";
 
 const Borrow = () => {
   const { wallet, totals, addBorrowed, addCollateral } = useAppState();
@@ -280,66 +281,21 @@ const Borrow = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Stacks Tab - Empty for now */}
+          {/* Stacks Tab */}
           <TabsContent value="stacks" className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Badge variant="outline">Coming Soon</Badge>
-              <Badge variant="secondary">Cross-Chain Ready</Badge>
+              <Badge variant="secondary">Bitcoin Security</Badge>
+              <Badge variant="default">STX Collateral</Badge>
             </div>
-            
+
             <Alert>
               <Info className="h-4 w-4" />
               <AlertDescription>
-                Stacks borrowing features are coming soon. You'll be able to borrow USDC using STX and sBTC as collateral.
+                Deposit STX as collateral on Stacks. Borrow USDC on Sui Network.
               </AlertDescription>
             </Alert>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Placeholder cards */}
-              <Card className="opacity-50">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
-                        ?
-                      </div>
-                      Cross-Chain Borrowing
-                    </span>
-                    <Badge variant="outline">Soon</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    Use STX and sBTC as collateral to borrow tokens across networks
-                  </div>
-                  <Button disabled className="w-full">
-                    Coming Soon
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="opacity-50">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
-                        ?
-                      </div>
-                      Multi-Chain Assets
-                    </span>
-                    <Badge variant="outline">Soon</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    Access liquidity from multiple blockchain ecosystems
-                  </div>
-                  <Button disabled className="w-full">
-                    Coming Soon
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            <StacksLending />
           </TabsContent>
 
           {/* Sui Tab */}

@@ -23,9 +23,9 @@ plan:
             anchor-block-only: true
             clarity-version: 1
         - contract-publish:
-            contract-name: money-market-core-v2
+            contract-name: money-market-core
             expected-sender: ST1AY6BBPTAQ5YBYEED1MRAB6FYHYB7NF1REJ3WS6
-            cost: 316530
+            cost: 316590
             path: "contracts\\money-market-core.clar"
             anchor-block-only: true
             clarity-version: 1

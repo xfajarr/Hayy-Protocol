@@ -204,40 +204,38 @@ const Lend = () => {
 
           <TabsContent value="stacks" className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
-              <Badge variant="secondary">Bitcoin Security</Badge>
               <Badge variant="outline">Coming Soon</Badge>
+              <Badge variant="secondary">Bitcoin Security</Badge>
             </div>
-            
+
             <Alert>
               <Info className="h-4 w-4" />
               <AlertDescription>
-                Stacks lending is coming soon! For now, try lending on Sui Network.
+                STX lending pools are coming soon. You'll be able to supply STX and earn yield.
               </AlertDescription>
             </Alert>
 
-            <div className="grid gap-4">
-              <Card className="bg-muted/50">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between text-muted-foreground">
-                    <span className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
-                        STX
-                      </div>
-                      Stacks Lending
-                    </span>
-                    <Badge variant="outline">Soon</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    STX and sBTC lending pools will be available soon.
-                  </div>
-                  <Button disabled className="w-full">
-                    Coming Soon
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            <Card className="opacity-50">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                      STX
+                    </div>
+                    Stacks (STX)
+                  </span>
+                  <Badge variant="outline">Soon</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  Supply STX to lending pools and earn competitive yields
+                </div>
+                <Button disabled className="w-full">
+                  Coming Soon
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="sui" className="space-y-4">

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutateMintMockUsdc } from "@/features/faucet/hooks/useMutateMintMockUsdc";
-import { Droplets, Coins } from "lucide-react";
+import { Coins } from "lucide-react";
 import { useMutateMintMockSbtc } from "../hooks/useMutateMintMockSbtc";
 
 interface TestTokenMinterProps {
@@ -101,17 +101,7 @@ export const TestTokenMinter: React.FC<TestTokenMinterProps> = ({
             disabled={isLoading}
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
-            {isLoading ? (
-              <>
-                <Droplets className="h-4 w-4 mr-2 animate-spin" />
-                Minting...
-              </>
-            ) : (
-              <>
-                <Droplets className="h-4 w-4 mr-2" />
-                Mint {usdcAmount} USDC
-              </>
-            )}
+            {isLoading ? <>Minting...</> : <>Mint {usdcAmount} USDC</>}
           </Button>
         </CardContent>
       </Card>
@@ -161,17 +151,7 @@ export const TestTokenMinter: React.FC<TestTokenMinterProps> = ({
             disabled={isLoading}
             className="w-full bg-orange-600 hover:bg-orange-700"
           >
-            {isLoading ? (
-              <>
-                <Coins className="h-4 w-4 mr-2 animate-spin" />
-                Minting...
-              </>
-            ) : (
-              <>
-                <Coins className="h-4 w-4 mr-2" />
-                Mint {sbtcAmount} sBTC
-              </>
-            )}
+            {isLoading ? <>Minting...</> : <>Mint {sbtcAmount} sBTC</>}
           </Button>
         </CardContent>
       </Card>

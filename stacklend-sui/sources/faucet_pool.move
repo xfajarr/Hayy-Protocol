@@ -127,23 +127,23 @@ public fun mint_usdc(
     amount: u64,
     ctx: &mut TxContext
 ) {
-    assert!(pool.is_active, E_FAUCET_EMPTY);
-    assert!(amount <= MAX_SINGLE_USDC_MINT, E_AMOUNT_TOO_LARGE);
+    // assert!(pool.is_active, E_FAUCET_EMPTY);
+    // assert!(amount <= MAX_SINGLE_USDC_MINT, E_AMOUNT_TOO_LARGE);
     
     let user = ctx.sender();
     let current_time = ctx.epoch_timestamp_ms();
     
     // Check cooldown
-    check_cooldown(&pool.last_mint_time, user, current_time);
+    // check_cooldown(&pool.last_mint_time, user, current_time);
     
     // Check daily limits
-    let remaining = check_and_update_daily_usage(
-        &mut pool.usdc_daily_usage,
-        user,
-        amount,
-        DAILY_USDC_LIMIT,
-        current_time
-    );
+    // let remaining = check_and_update_daily_usage(
+    //     &mut pool.usdc_daily_usage,
+    //     user,
+    //     amount,
+    //     DAILY_USDC_LIMIT,
+    //     current_time
+    // );
     
     // Mint tokens
     let minted_coin = coin::mint(&mut pool.usdc_treasury, amount, ctx);
@@ -155,7 +155,8 @@ public fun mint_usdc(
         user,
         token_type: b"USDC",
         amount,
-        remaining_daily: remaining,
+        // remaining_daily: remaining,
+        remaining_daily: 0
     });
     
     transfer::public_transfer(minted_coin, user);
@@ -167,23 +168,23 @@ public fun mint_sbtc(
     amount: u64,
     ctx: &mut TxContext
 ) {
-    assert!(pool.is_active, E_FAUCET_EMPTY);
-    assert!(amount <= MAX_SINGLE_SBTC_MINT, E_AMOUNT_TOO_LARGE);
+    // assert!(pool.is_active, E_FAUCET_EMPTY);
+    // assert!(amount <= MAX_SINGLE_SBTC_MINT, E_AMOUNT_TOO_LARGE);
     
     let user = ctx.sender();
     let current_time = ctx.epoch_timestamp_ms();
     
     // Check cooldown
-    check_cooldown(&pool.last_mint_time, user, current_time);
+    // check_cooldown(&pool.last_mint_time, user, current_time);
     
     // Check daily limits
-    let remaining = check_and_update_daily_usage(
-        &mut pool.sbtc_daily_usage,
-        user,
-        amount,
-        DAILY_SBTC_LIMIT,
-        current_time
-    );
+    // let remaining = check_and_update_daily_usage(
+    //     &mut pool.sbtc_daily_usage,
+    //     user,
+    //     amount,
+    //     DAILY_SBTC_LIMIT,
+    //     current_time
+    // );
     
     // Mint tokens
     let minted_coin = coin::mint(&mut pool.sbtc_treasury, amount, ctx);
@@ -195,7 +196,8 @@ public fun mint_sbtc(
         user,
         token_type: b"sBTC",
         amount,
-        remaining_daily: remaining,
+        // remaining_daily: remaining,
+        remaining_daily: 0
     });
     
     transfer::public_transfer(minted_coin, user);
