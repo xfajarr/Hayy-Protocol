@@ -5,6 +5,8 @@ import {
   ClarityValue,
   bufferCV,
   stringAsciiCV,
+  PostConditionMode,
+  principalCV,
 } from "@stacks/transactions";
 import { STACKS_TESTNET, STACKS_MAINNET } from "@stacks/network";
 import { STACKS_CONFIG, STACKS_FUNCTIONS } from "@/constants/contract/stacks";
@@ -30,6 +32,11 @@ export interface ContractCallOptions {
 // StackLend Protocol Contract Addresses
 export const STACKLEND_CONTRACTS = {
   COLLATERAL: {
+    address: STACKS_CONFIG.contractAddress,
+    name: STACKS_CONFIG.collateralContractName,
+  },
+  // Add LENDING contract (currently same as collateral for MVP)
+  LENDING: {
     address: STACKS_CONFIG.contractAddress,
     name: STACKS_CONFIG.collateralContractName,
   },
@@ -69,6 +76,13 @@ const callContract = async (options: ContractCallOptions): Promise<void> => {
       },
       // Provide userSession when available to ensure proper wallet routing
       ...(userSession ? { userSession } : {}),
+      // Add fee configuration for higher gas costs
+      fee: "50000", // 0.05 STX - increased from default to handle medium-cost deployments
+      // CRITICAL FIX: Use Allow mode like sandbox explorer (not Deny mode)
+      postConditionMode: PostConditionMode.Allow,
+      postConditions: [],
+      // Add sponsored mode to bypass some wallet validations
+      sponsored: false,
       onFinish:
         onFinish ||
         ((data) => {
@@ -286,3 +300,63 @@ export const withdrawLending = async (
 export const lendSTX = depositCollateral;
 export const borrowToken = borrowCrossChain;
 export const repayLoan = signalRepayment;
+
+// ========================================
+// ADMIN FUNCTIONS (Manual Operations)
+// ========================================
+
+// Admin unlock collateral - manual operation (normally done by relayer)
+export const adminUnlockCollateral = async (
+  userAddress: string,
+  amount: string,
+  onFinish?: (data: FinishedTxData) => void,
+  onCancel?: () => void,
+): Promise<void> => {
+  return callContract({
+    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
+    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    functionName: "admin-unlock-collateral",
+    functionArgs: [
+      principalCV(userAddress), // User principal
+      uintCV(amount), // Amount to unlock (in microSTX)
+    ],
+    onFinish:
+      onFinish ||
+      ((data) => {
+        console.log("Collateral unlocked successfully:", data);
+      }),
+    onCancel:
+      onCancel ||
+      (() => {
+        console.log("Collateral unlock cancelled");
+      }),
+  });
+};
+
+// Emergency admin withdrawal
+export const adminEmergencyWithdraw = async (
+  recipient: string,
+  amount: string,
+  onFinish?: (data: FinishedTxData) => void,
+  onCancel?: () => void,
+): Promise<void> => {
+  return callContract({
+    contractAddress: STACKLEND_CONTRACTS.COLLATERAL.address,
+    contractName: STACKLEND_CONTRACTS.COLLATERAL.name,
+    functionName: "admin-emergency-withdraw",
+    functionArgs: [
+      principalCV(recipient), // Recipient principal
+      uintCV(amount), // Amount to withdraw (in microSTX)
+    ],
+    onFinish:
+      onFinish ||
+      ((data) => {
+        console.log("Emergency withdrawal successful:", data);
+      }),
+    onCancel:
+      onCancel ||
+      (() => {
+        console.log("Emergency withdrawal cancelled");
+      }),
+  });
+};

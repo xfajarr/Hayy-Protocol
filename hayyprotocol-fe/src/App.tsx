@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Lend from "./pages/Lend";
 import Borrow from "./pages/Borrow";
 import Faucet from "./pages/Faucet";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import { Layout } from "@/components/layout/Layout";
 import { StacksProvider } from "./contexts/StacksContext";
@@ -38,6 +39,7 @@ const App = () => (
                   <Route path="/lend" element={<Lend />} />
                   <Route path="/borrow" element={<Borrow />} />
                   <Route path="/faucet" element={<Faucet />} />
+                  <Route path="/admin" element={<Admin />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

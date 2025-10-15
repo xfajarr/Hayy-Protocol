@@ -2,17 +2,24 @@
 id: 0
 name: Testnet deployment
 network: testnet
-stacks-node: "https://api.testnet.hiro.so"
+stacks-node: "https://stacks-node-api.testnet.stacks.co"
 bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
 plan:
   batches:
     - id: 0
       transactions:
         - contract-publish:
+<<<<<<< HEAD
             contract-name: mock-oracle-v1
             expected-sender: ST27SK3XEXY9QW51FJHKBR3QEHR5RFDBH3C16RTW0
             cost: 10520
             path: "contracts\\mock-oracle-v1.clar"
+=======
+            contract-name: collateral-v1
+            expected-sender: ST1WVZNYKMK1MS2V2B728ZWJ2C76TAN49C6HSY7JF
+            cost: 50500
+            path: contracts/collateral-v1.clar
+>>>>>>> 5a9a85724588c9f8cf2e1b0c0a39972081b8d1cd
             anchor-block-only: true
             clarity-version: 3
         - contract-publish:

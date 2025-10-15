@@ -28,6 +28,7 @@ export const Header = () => {
           <NavLink to="/lend" className={navCls}>Lend</NavLink>
           <NavLink to="/borrow" className={navCls}>Borrow</NavLink>
           <NavLink to="/faucet" className={navCls}>Faucet</NavLink>
+          <NavLink to="/admin" className={navCls}>Admin</NavLink>
         </nav>
 
         <div className="flex items-center gap-2">
